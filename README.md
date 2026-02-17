@@ -5,13 +5,13 @@ Delete snapshots through the vCenter with Ansible
 A streamlined Ansible utility for reporting and cleaning up aged VMware snapshots across multiple datacenters using the [community.vmware collection](https://docs.ansible.com).
 
 ## 🚀 Overview
-This automation maintains storage health by identifying and removing snapshots older than a specified threshold. It leverages [govc](https://github.com) for precise sizing and generates CSV reports for auditing.
+This automation maintains VMs storage health by identifying and removing snapshots older than a specified threshold. It leverages `govc` for precise sizing and generates CSV reports for auditing.
 
 ### Key Features
 *   **Aged Cleanup:** Deletes snapshots exceeding a defined `day` threshold.
 *   **Automated Reporting:** Generates CSVs of existing snapshots and deletion logs.
 *   **Dynamic Inventory:** Builds inventory on-the-fly from templates (`dc.vmware.j2`).
-*   **Safety Check:** Requires an active [tmux](https://github.com) session to prevent job interruption.
+*   **Safety Check:** Requires an active `tmux` session to prevent job interruption.
 
 ## 🛠 Prerequisites
 *   **Ansible Core:** [v2.15.8+](https://docs.ansible.com)
