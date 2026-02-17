@@ -1,0 +1,120 @@
+#for DC in $(<DCs.txt) ; do echo $DC ; ansible-playbook -t rm  -e "day=60 dc=$DC"  snapshot.yml ; done   #For GSS vcenter use day=60
+#for DC in $(<DCs.txt) ; do echo $DC ; ansible-playbook -t rm  -e "day=15 dc=$DC"  snapshot.yml ; done    
+#for DC in $(<DCs.txt) ; do echo $DC ; ansible-playbook -t report -e "day=15 dc=$DC" snapshot.yml ; done
+#ansible-playbook -t report  -e "day=7 dc=ILRNA_BSS_DC"  snapshot.yml
+#ansible-playbook -t rm  -e "day=180 dc=ILRNA_BSS_DC"  snapshot.yml
+#Dependencies: govc, ansible core 2.15.8, ldap user SnapshotBot@amdocs.com
+#Remove ~/.govmomi/ if any issues with govc sessions.
+---
+- name: Pre-play
+  hosts: localhost
+  gather_facts: no
+  connection: local
+  tasks:
+
+    - name: Verify running inside tmux session
+      run_once: true
+      assert:
+        that: lookup('env', 'TMUX') is truthy   #tmux | length > 0
+        fail_msg: "Please open a tmux session\nBye"
+        success_msg: "tmux is running"
+        quiet: false
+      tags: rm
+
+    - name: Create dynamic inventory file from template
+      template:
+        src:  ./dc.vmware.j2
+        dest: ./dc.vmware.yml
+      tags: 
+        - pre
+        - report
+        - rm
+        
+    - name: Refresh inventory
+      meta: refresh_inventory
+      tags: 
+        - pre
+        - report
+        - rm
+
+- name: Main Play
+  strategy: free
+  hosts: all
+  gather_facts: no
+  vars_files: ./dc.vmware.yml
+  vars:
+    today: "{{now(utc=false,fmt='%Y-%m-%d')}}"
+    days: "{{((now(utc=false,fmt='%Y-%m-%d')| to_datetime('%Y-%m-%d')) - (snapshot.rootSnapshotList[0].createTime[0:10] | to_datetime('%Y-%m-%d'))).days}}"
+    tmux: "{{lookup('env', 'TMUX')}}"
+    awk: awk -F '[][]' '{print $2}'
+    size: "{{lookup('pipe','GOVC_USERNAME={{username}} GOVC_PASSWORD={{password}}  govc snapshot.tree -u={{hostname}} -dc={{dc}} -vm {{inventory_hostname}} -s | head -n 1 | {{awk}}')}}"
+
+  tasks:
+
+    - name: Save original snapshot size
+      set_fact:
+        size: "{{size}}"
+      tags: 
+        - report
+        - rm
+
+    - name: show details before deletion
+      debug:
+        msg: "Days: {{days}}, snapshot size: {{size}}, snapshot id: {{snapshot.rootSnapshotList[0].id}}"
+      tags: rm
+
+    - name: Normalize to GB
+      set_fact:
+        size: "{{size | human_to_bytes | human_readable(unit='G')}}"
+      when: '"GB" not in size'
+      tags: 
+        - report
+        - rm
+
+    - name: Create report
+      delegate_to: localhost
+      lineinfile:
+        create: true
+        path: ./{{dc}}+{{day}}.csv
+        line: "{{inventory_hostname}},{{days}},{{size[:-2]}},{{dc}}" 
+      tags: report
+
+    - name: Remove first snapshot of a VM
+      delegate_to: localhost
+      when: days | int > day | int
+      vmware_guest_snapshot:
+        hostname: "{{ hostname }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+        datacenter: "{{ dc }}"
+        validate_certs: no
+        uuid: "{{ config.uuid }}"
+        snapshot_id: "{{snapshot.rootSnapshotList[0].id}}"
+        state: "absent"
+      register: result
+      tags: rm
+        
+    - name: Add to 'removed' report
+      delegate_to: localhost
+      when: result is changed 
+      lineinfile:
+        create: true
+        path: ./{{hostname.split('.')[0]}}_removed.csv
+        line: "{{inventory_hostname}},{{days}},{{size[:-2]}},{{dc}},{{now(utc=false,fmt='%Y-%m-%d %H:%M')}}" 
+      tags: rm
+
+- name: Post play
+  hosts: localhost
+  gather_facts: no
+  connection: local
+  tasks:
+    - name: Delete dynamic inventory file
+      file:
+        path: ./dc.vmware.yml
+        state: absent
+      tags: 
+        - pre
+        - report
+        - rm
+
+# ©2024 Written by Golan Durany/Unix Delivery          
