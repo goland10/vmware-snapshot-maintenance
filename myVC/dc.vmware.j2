@@ -1,0 +1,20 @@
+plugin: community.vmware.vmware_vm_inventory
+strict: false
+hostname: ilrnaprodvc01.corp.amdocs.com
+username: SnapshotBot@amdocs.com
+password: '*****'
+validate_certs: false
+hostnames:
+- config.name
+properties:   #  all 
+- 'config.name'
+- "config.template"
+- 'snapshot.rootSnapshotList'
+- 'config.uuid'
+resources:
+- datacenter:
+  - {{dc}}
+filters:
+- config.template is false
+- snapshot is defined 
+- ((now(utc=false,fmt='%Y-%m-%d')| to_datetime('%Y-%m-%d')) - (snapshot.rootSnapshotList[0].createTime[0:10] | to_datetime('%Y-%m-%d'))).days | int > {{day}}
