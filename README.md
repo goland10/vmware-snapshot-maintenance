@@ -12,15 +12,15 @@ By enforcing a retention policy, reducing manual effort, and producing audit-fri
 
 ### Key Features
 *   **Aged Cleanup:** Deletes snapshots exceeding a defined `day` threshold.
-*   **Automated Reporting:** Generates CSVs of existing snapshots and deletion logs.
-*   **Dynamic Inventory:** Builds inventory on-the-fly from templates (`dc.vmware.j2`).
-*   **Safety Check:** Requires an active `tmux` session to prevent job interruption.
+*   **Automated Reporting:** Generates CSVs of existing snapshots and **Accumulated deletion logs**.
+*   **Dynamic Inventory:** Builds vCenter inventory on-the-fly from templates (`dc.vmware.j2`).
+*   **Session Management:** Requires an active `tmux` session to prevent job interruption.
+*   **least privilege approach** A dedicated LDAP user with single permission (delete VM snapshot) was created for this automation.
 
 ## 🛠 Prerequisites
 *   **Ansible Core:** [v2.15.8+](https://docs.ansible.com)
 *   **Govc CLI:** Must be installed and in `$PATH`.
 *   **Credentials:** LDAP user `SnapshotBot@company.com`.
-*   **Session Management:** If `govc` session issues occur, clear the cache: `rm -rf ~/.govmomi/`.
 
 ## 📖 Usage Examples
 
