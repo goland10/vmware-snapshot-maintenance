@@ -18,7 +18,7 @@ By enforcing a retention policy, reducing manual effort, and producing audit-fri
 *   **least privilege approach** A dedicated LDAP user with single permission (delete VM snapshot) was created for this automation.
 
 ## 🛠 Prerequisites
-*   **Ansible Core:** [v2.15.8+](https://docs.ansible.com)
+*   **Ansible Core:** v2.15.8+
 *   **Govc CLI:** Must be installed and in `$PATH`.
 *   **Credentials:** LDAP user `SnapshotBot@company.com`.
 
@@ -40,7 +40,7 @@ done
 
 ### 🗑️ Snapshot Deletion (rm tag)
 
-Delete Snapshots Older Than 7 Days (Single DC)
+Delete snapshots older than 7 days (Single DC)
 ```bash
 ansible-playbook -t rm -e "day=7 dc=ILRNA_BSS_DC" snapshot.yml
 ```
