@@ -1,4 +1,4 @@
-# VMware Snapshot deletion Automation
+# VMware Snapshot Deletion Automation
 Delete VMs snapshots through the vCenter with Ansible
 
 ## 🚀 Overview
