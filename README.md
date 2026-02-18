@@ -1,11 +1,14 @@
-# vmware-snapshot-maintenance
-Delete snapshots through the vCenter with Ansible
-# VMware Snapshot Management Automation
-
-A streamlined Ansible utility for reporting and cleaning up aged VMware snapshots across multiple datacenters using the [community.vmware collection](https://docs.ansible.com).
+# VMware Snapshot deletion Automation
+Delete VMs snapshots through the vCenter with Ansible
 
 ## 🚀 Overview
-This automation maintains VMs storage health by identifying and removing snapshots older than a specified threshold. It leverages `govc` for precise sizing and generates CSV reports for auditing.
+This automation solves the operational risks caused by unmanaged VMware snapshots across multiple datacenters.
+
+In large vSphere environments, snapshots are often created for maintenance or troubleshooting and then forgotten. Over time, they consume datastore space, degrade VM performance, extend backup windows, and can even cause datastore exhaustion or VM connectivity issues.
+
+The Ansible playbook automates the identification, reporting, and removal of snapshots older than a defined retention threshold (for example 7, 15, 60, or 180 days). It dynamically builds inventory per datacenter, calculates snapshot age, retrieves snapshot size (using `govc`), and either generates reports or removes outdated snapshots.
+
+By enforcing a retention policy, reducing manual effort, and producing audit-friendly reports, this automation minimizes storage bloat and operational risk while keeping snapshot management consistent and controlled at scale.
 
 ### Key Features
 *   **Aged Cleanup:** Deletes snapshots exceeding a defined `day` threshold.
@@ -16,7 +19,7 @@ This automation maintains VMs storage health by identifying and removing snapsho
 ## 🛠 Prerequisites
 *   **Ansible Core:** [v2.15.8+](https://docs.ansible.com)
 *   **Govc CLI:** Must be installed and in `$PATH`.
-*   **Credentials:** LDAP user `SnapshotBot@amdocs.com`.
+*   **Credentials:** LDAP user `SnapshotBot@company.com`.
 *   **Session Management:** If `govc` session issues occur, clear the cache: `rm -rf ~/.govmomi/`.
 
 ## 📖 Usage Examples
