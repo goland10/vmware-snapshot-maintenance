@@ -24,9 +24,31 @@ By enforcing a retention policy, reducing manual effort, and producing audit-fri
 
 ## 📖 Usage Examples
 
-### 📊 Reporting
+### 📊 Reporting (report tag)
+
+Generate a CSV report of snapshots older than 7 days (Single DC):
+```bash
+ansible-playbook -t report  -e "day=7 dc=ILRNA_BSS_DC"  snapshot.yml
+```
+
 Generate a CSV report of snapshots older than 15 days for all datacenters listed in `DCs.txt`:
 ```bash
 for DC in $(<DCs.txt) ; do 
   ansible-playbook -t report -e "day=15 dc=$DC" snapshot.yml 
 done
+```
+
+### 🗑️ Snapshot Deletion (rm tag)
+
+Delete Snapshots Older Than 7 Days (Single DC)
+```bash
+ansible-playbook -t rm -e "day=7 dc=ILRNA_BSS_DC" snapshot.yml
+```
+
+Delete Snapshots Older Than 60 Days for all datacenters listed in `DCs.txt`:
+```bash
+for DC in $(<DCs.txt); do
+  echo "Processing $DC"
+  ansible-playbook -t rm -e "day=60 dc=$DC" snapshot.yml
+done
+```
