@@ -1,0 +1,72 @@
+<mxfile host="app.diagrams.net" agent="Claude">
+  <diagram name="VMware Snapshot Maintenance" id="vmware-snap-arch">
+    <mxGraphModel dx="1178" dy="637" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;align=center;fontSize=20;fontStyle=1;fontColor=#333333;" value="VMware Snapshot Maintenance — Ansible Automation" vertex="1">
+          <mxGeometry height="30" width="480" x="260" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="op" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;arcSize=15;" value="Operator&#xa;(must run inside a tmux session)" vertex="1">
+          <mxGeometry height="60" width="240" x="380" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="playbook" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#333333;arcSize=15;" value="ansible-playbook snapshot.yml&amp;nbsp;-t rm  -e &quot;day=7 dc=MyDC&quot;&lt;div&gt;(Each vCenter has its own automation folder)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="340" x="330" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="template" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#333333;arcSize=15;" value="Pre-play: render dc.vmware.j2→ dc.vmware.yml (dynamic inventory)&lt;br&gt;Filters: VM (not template), Snapshot exists, Snapshot age" vertex="1">
+          <mxGeometry height="60" width="380" x="310" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="refresh" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#333333;arcSize=15;" value="Refresh inventory" vertex="1">
+          <mxGeometry height="40" width="180" x="410" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="vcenter" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#333333;arcSize=15;" value="vCenter API / govc CLI&lt;br&gt;Auth: LDAP user SnapshotBot@company.com&lt;br&gt;(least-privilege: delete-snapshot only)" vertex="1">
+          <mxGeometry height="70" width="320" x="340" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="dcloop" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#333333;arcSize=15;" value="Loop per Datacenter (DCs.txt)" vertex="1">
+          <mxGeometry height="50" width="240" x="380" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="vmcheck" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#333333;arcSize=15;" value="Per VM: get snapshot age &amp; size&#xa;(govc snapshot.tree)" vertex="1">
+          <mxGeometry height="60" width="280" x="360" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="delete" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#333333;arcSize=15;" value="[rm tag]&#xa;Delete snapshot&#xa;(vmware_guest_snapshot module)" vertex="1">
+          <mxGeometry height="70" width="240" x="380" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="removedlog" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#333333;arcSize=15;" value="Append line to&lt;br&gt;{VC}_removed.csv" vertex="1">
+          <mxGeometry height="60" width="240" x="380" y="800" as="geometry" />
+        </mxCell>
+        <mxCell id="cleanup" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;arcSize=15;" value="Post-play: delete dc.vmware.yml&#xa;(inventory cleanup)" vertex="1">
+          <mxGeometry height="60" width="240" x="380" y="910" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="op" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="playbook">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="playbook" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="template">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="template" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="refresh">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="refresh" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="vcenter">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="vcenter" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="dcloop">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="dcloop" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="vmcheck">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="vmcheck" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="delete" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="removedlog">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="removedlog" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" target="cleanup">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
