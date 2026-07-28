@@ -52,3 +52,8 @@ for DC in $(<DCs.txt); do
   ansible-playbook -t rm -e "day=60 dc=$DC" snapshot.yml
 done
 ```
+
+Sample deletion report (with descriptive header line)
+
+<img width="690" height="180" alt="image" src="https://github.com/user-attachments/assets/1f9648fe-a1e7-465f-9d3b-2d304c61a0d0" />
+
