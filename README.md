@@ -27,7 +27,7 @@ By proactively identifying and removing aged snapshots, this automation delivere
 * **Saved thousands of developer hours:** Reduced the time developers spent waiting for database access and incident resolution.
 * **Reduced infrastructure team workload:** Prevented avoidable escalations, manual cleanup work, and prolonged incident response efforts.
 
-Instead of reacting to storage exhaustion and VM degradation after they affect users, teams can enforce a consistent snapshot-retention policy and address risk before it becomes an outage.
+*Instead of reacting to storage exhaustion and VM degradation after they affect users, teams can enforce a consistent snapshot-retention policy and address risk before it becomes an outage.*
 
 ### Key Features
 *   **Aged Cleanup:** Deletes snapshots exceeding a defined `day` threshold.
