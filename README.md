@@ -10,12 +10,31 @@ The Ansible playbook automates the identification, reporting, and removal of sna
 
 By enforcing a retention policy, reducing manual effort, and producing audit-friendly reports, this automation minimizes storage bloat and operational risk while keeping snapshot management consistent and controlled at scale.
 
+## 💥 Real-World Impact
+
+This automation was created to address a high-impact operational issue in large-scale environments: oversized and long-lived snapshots on database VMs.
+
+In the most critical cases, snapshot growth caused database VMs to become unavailable. Application and development teams could not connect to their databases, leaving multiple teams blocked until the issue was identified and resolved.
+
+Resolving these incidents required deleting the oversized snapshot and consolidating the VM disks. Depending on the size of the VM and the snapshot chain, these operations could take anywhere from approximately 6 hours to 3 days to complete. During that time, affected teams could remain unable to access critical database services, while infrastructure teams had to closely monitor the recovery process.
+
+By proactively identifying and removing aged snapshots, this automation delivered measurable operational and business benefits:
+
+* **Improved VM performance:** Reduced the performance impact caused by large, long-running snapshots, especially on high-demand database VMs.
+* **Reduced storage expansion:** Eliminated the recurring need to add datastore capacity simply to accommodate unmanaged snapshot growth.
+* **Reclaimed approximately 300 TB:** Recovered about **300 TB of storage capacity** during the first large-scale implementation.
+* **Prevented snapshot-related outages:** Helped prevent incidents where bloated snapshots caused database connectivity issues and service disruption.
+* **Saved thousands of developer hours:** Reduced the time developers spent waiting for database access and incident resolution.
+* **Reduced infrastructure team workload:** Prevented avoidable escalations, manual cleanup work, and prolonged incident response efforts.
+
+Instead of reacting to storage exhaustion and VM degradation after they affect users, teams can enforce a consistent snapshot-retention policy and address risk before it becomes an outage.
+
 ### Key Features
 *   **Aged Cleanup:** Deletes snapshots exceeding a defined `day` threshold.
 *   **Automated Reporting:** Generates CSVs of existing snapshots and **Accumulated deletion logs**.
 *   **Dynamic Inventory:** Builds vCenter inventory on-the-fly from templates (`dc.vmware.j2`).
 *   **Session Management:** Requires an active `tmux` session to prevent job interruption.
-*   **least privilege approach** A dedicated LDAP user with single permission (delete VM snapshot) was created for this automation.
+*   **Least privilege approach** A dedicated LDAP user with single permission (delete VM snapshot) was created for this automation.
 
 ## 🛠 Prerequisites
 *   **Ansible Core:** v2.15.8+
